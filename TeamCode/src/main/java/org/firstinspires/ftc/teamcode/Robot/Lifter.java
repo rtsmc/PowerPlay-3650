@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Lifter {
     private DcMotorEx left;
     private DcMotorEx right;
+    private static final int LIFTER_VELOCITY = 2700;
 
     public Lifter(DcMotorEx left, DcMotorEx right){
         this.left = left;
@@ -19,13 +20,13 @@ public class Lifter {
     }
 
     public void moveUp(){
-        left.setVelocity(900);
-        right.setVelocity(900);
+        left.setVelocity(LIFTER_VELOCITY);
+        right.setVelocity(LIFTER_VELOCITY);
     }
 
     public void moveDown(){
-        left.setVelocity(-900);
-        right.setVelocity(-900);
+        left.setVelocity(-LIFTER_VELOCITY);
+        right.setVelocity(-LIFTER_VELOCITY);
     }
 
     public void stop(){

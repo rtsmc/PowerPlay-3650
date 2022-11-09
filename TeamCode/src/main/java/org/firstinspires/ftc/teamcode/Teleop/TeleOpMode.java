@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.teamcode.Robot.Lifter;
 import org.firstinspires.ftc.teamcode.Robot.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Claw;
 import org.firstinspires.ftc.teamcode.util.AxisDirection;
@@ -20,7 +21,11 @@ public class TeleOpMode extends LinearOpMode {
                 hardwareMap.get(DcMotorEx.class, "rightFront"),
                 hardwareMap.get(DcMotorEx.class, "leftRear"),
                 hardwareMap.get(DcMotorEx.class, "rightRear"), true);
+
         Claw claw = new Claw(hardwareMap.get(CRServo.class, "clawServo"));
+
+        Lifter lifter = new Lifter(hardwareMap.get(DcMotorEx.class, "leftLifter"),
+                hardwareMap.get(DcMotorEx.class, "rightLifter"));
 
         BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -34,12 +39,12 @@ public class TeleOpMode extends LinearOpMode {
 
         waitForStart();
 
+        int clawPower = 0;
+        int liftPower = 0;
         while(opModeIsActive()){
             //Get the hypotenuse of the right triangle created by the position of the left gamepad stick on the x and y axis
             double gamepadX = -gamepad1.left_stick_x;
             double gamepadY = -gamepad1.left_stick_y;
-            boolean leftBumper = gamepad1.left_bumper;
-            boolean rightBumper = gamepad1.right_bumper;
             double r = Math.hypot(gamepadX, gamepadY);
 
             /*Get the angle that the left gamepad stick creates with the horizontal x axis.
@@ -68,12 +73,20 @@ public class TeleOpMode extends LinearOpMode {
 
             mecanumDrive.drive(fL, fR, bL, bR);
 
-            if (leftBumper) claw.move(1); //open
-            else if (rightBumper) claw.move(-1); //close
-            else claw.move(0);
+            if(gamepad1.left_bumper && !gamepad1.right_bumper) clawPower = 1; //open
+
+            if(!gamepad1.left_bumper && gamepad1.right_bumper) clawPower = -1; //close
+
+            if(gamepad1.left_bumper == gamepad1.right_bumper) clawPower = 0; //stop
+
+            claw.move(clawPower);
 
 
-            telemetry.update();
+            if(gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
+
+            if(!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
+
+            if(gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
         }
     }
 }

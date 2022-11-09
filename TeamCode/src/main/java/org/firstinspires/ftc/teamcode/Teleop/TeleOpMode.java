@@ -4,8 +4,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.Robot.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Robot.Claw;
 import org.firstinspires.ftc.teamcode.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 
@@ -18,6 +20,7 @@ public class TeleOpMode extends LinearOpMode {
                 hardwareMap.get(DcMotorEx.class, "rightFront"),
                 hardwareMap.get(DcMotorEx.class, "leftRear"),
                 hardwareMap.get(DcMotorEx.class, "rightRear"), true);
+        Claw claw = new Claw(hardwareMap.get(CRServo.class, "clawServo"));
 
         BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -35,6 +38,8 @@ public class TeleOpMode extends LinearOpMode {
             //Get the hypotenuse of the right triangle created by the position of the left gamepad stick on the x and y axis
             double gamepadX = -gamepad1.left_stick_x;
             double gamepadY = -gamepad1.left_stick_y;
+            boolean leftBumper = gamepad1.left_bumper;
+            boolean rightBumper = gamepad1.right_bumper;
             double r = Math.hypot(gamepadX, gamepadY);
 
             /*Get the angle that the left gamepad stick creates with the horizontal x axis.
@@ -55,13 +60,19 @@ public class TeleOpMode extends LinearOpMode {
             double bR = Math.sin(angle)*r;
 
             //Add or subract the x value of the right stick to each of the motors so that the
-            // robot can turn with the right stick.
+            //robot can turn with the right stick.
             fL += gamepad1.right_stick_x;
             fR -= gamepad1.right_stick_x;
             bL += gamepad1.right_stick_x;
             bR -= gamepad1.right_stick_x;
 
             mecanumDrive.drive(fL, fR, bL, bR);
+
+            if (leftBumper) claw.move(1); //open
+            else if (rightBumper) claw.move(-1); //close
+            else claw.move(0);
+
+
             telemetry.update();
         }
     }

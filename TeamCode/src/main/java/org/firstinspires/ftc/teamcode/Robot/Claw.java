@@ -4,10 +4,17 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 public class Claw {
     private CRServo servo;
-    public Claw(CRServo servo) {
+    private int power = 1;
+    public Claw (CRServo servo) {
         this.servo = servo;
     }
-    public void move(int direction) {
-        servo.setPower(direction);
+    public void open() {
+        servo.setPower(-power);
+    }
+    public void close() {
+        servo.setPower(power);
+    }
+    public void stop() {
+        servo.setPower(0);
     }
 }

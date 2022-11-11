@@ -39,11 +39,20 @@ public class Lifter {
         left.setTargetPosition(POSITIONS[position]);
         right.setTargetPosition(POSITIONS[position]);
 
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left.setTargetPositionTolerance(50);
+        right.setTargetPositionTolerance(50);
+    }
+
+    public void setMode(DcMotor.RunMode runMode){
+        left.setMode(runMode);
+        right.setMode(runMode);
     }
 
     public String getPositions(){
         return "left: " + left.getCurrentPosition() + " right: " + right.getCurrentPosition();
+    }
+
+    public String getTargetPositions(){
+        return "left: " + left.getTargetPosition() + "right: " + right.getCurrentPosition();
     }
 }

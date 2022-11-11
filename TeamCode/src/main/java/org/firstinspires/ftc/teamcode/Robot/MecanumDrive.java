@@ -33,18 +33,18 @@ public class MecanumDrive {
     }
 
     public void driveVelocity(double powerfL, double powerfR, double powerbL, double powerbR){
-        frontLeft.setVelocity(powerfL*850);
-        frontRight.setVelocity(powerfR*850);
-        backLeft.setVelocity(powerbL*1040);
-        backRight.setVelocity(powerbR*1040);
+        frontLeft.setVelocity(powerfL*2800);
+        frontRight.setVelocity(powerfR*2800);
+        backLeft.setVelocity(powerbL*2800);
+        backRight.setVelocity(powerbR*2800);
     }
 
-    public void drive(double powerfL, double powerfR, double powerbL, double powerbR){
-        frontLeft.setPower(powerfL);
-        frontRight.setPower(powerfR);
-        backLeft.setPower(powerbL);
-        backRight.setPower(powerbR);
-    }
+//    public void drive(double powerfL, double powerfR, double powerbL, double powerbR){
+//        frontLeft.setPower(powerfL);
+//        frontRight.setPower(powerfR);
+//        backLeft.setPower(powerbL);
+//        backRight.setPower(powerbR);
+//    }
 
     public void setModes(){
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

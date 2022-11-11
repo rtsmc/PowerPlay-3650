@@ -33,4 +33,8 @@ public class Lifter {
         left.setVelocity(0);
         right.setVelocity(0);
     }
+
+    public String getPositions(){
+        return "left: " + left.getCurrentPosition() + " right: " + right.getCurrentPosition();
+    }
 }

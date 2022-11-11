@@ -74,17 +74,16 @@ public class TeleOpMode extends LinearOpMode {
             mecanumDrive.driveVelocity(fL, fR, bL, bR);
 
             if(!gamepad1.left_bumper && gamepad1.right_bumper) claw.open(); //open
-
             if(gamepad1.left_bumper && !gamepad1.right_bumper) claw.close(); //close
-
             if(gamepad1.left_bumper == gamepad1.right_bumper) claw.stop(); //stop
 
-
             if(gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
-
             if(!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
-
             if(gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
+
+            if(gamepad1.a) lifter.setPosition(0);
+            if(gamepad1.b) lifter.setPosition(2);
+            if(gamepad1.x) lifter.setPosition(3);
 
             telemetry.addData("Positions", lifter.getPositions());
             telemetry.update();

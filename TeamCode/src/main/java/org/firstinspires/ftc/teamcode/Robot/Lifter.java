@@ -8,6 +8,7 @@ public class Lifter {
     private DcMotorEx left;
     private DcMotorEx right;
     private static final int LIFTER_VELOCITY = 2700;
+    private static final int[] POSITIONS = {0, 1800, 3733, 5600};
 
     public Lifter(DcMotorEx left, DcMotorEx right){
         this.left = left;
@@ -32,6 +33,14 @@ public class Lifter {
     public void stop(){
         left.setVelocity(0);
         right.setVelocity(0);
+    }
+
+    public void setPosition(int position){
+        left.setTargetPosition(POSITIONS[position]);
+        right.setTargetPosition(POSITIONS[position]);
+
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public String getPositions(){

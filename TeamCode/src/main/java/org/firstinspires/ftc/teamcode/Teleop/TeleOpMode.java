@@ -74,18 +74,22 @@ public class TeleOpMode extends LinearOpMode {
             if(gamepad1.left_bumper && !gamepad1.right_bumper) claw.close(); //close
             if(gamepad1.left_bumper == gamepad1.right_bumper) claw.stop(); //stop
 
-            if(gamepad1.dpad_up || gamepad1.dpad_down) {   //if dpad is clicked, set mode to run using encoder & move up, down, or stop
-                lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                if (gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
-                if (!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
-                if (gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
-            }
-            if(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) {   //if button clicked, set the position & run to that position
-                if (gamepad1.a) lifter.setPosition(0);
-                if (gamepad1.b) lifter.setPosition(2);
-                if (gamepad1.x) lifter.setPosition(3);
-                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
+//            if(gamepad1.dpad_up || gamepad1.dpad_down) {   //if dpad is clicked, set mode to run using encoder & move up, down, or stop
+//                lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                if (gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
+//                if (!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
+//                if (gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
+//            }
+//            if(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) {   //if button clicked, set the position & run to that position
+//                if (gamepad1.a) lifter.setPosition(0);
+//                if (gamepad1.b) lifter.setPosition(2);
+//                if (gamepad1.x) lifter.setPosition(3);
+//                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            }
+
+            if (gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
+            if (!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
+            if (gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
 
             telemetry.addData("Positions", lifter.getPositions());
             telemetry.addData("Target Positions", lifter.getTargetPositions());

@@ -70,9 +70,9 @@ public class TeleOpMode extends LinearOpMode {
             bR -= gamepad1.right_stick_x;
             mecanumDrive.driveVelocity(fL, fR, bL, bR);
 
-            if(!gamepad1.left_bumper && gamepad1.right_bumper) claw.open(); //open
-            if(gamepad1.left_bumper && !gamepad1.right_bumper) claw.close(); //close
-            if(gamepad1.left_bumper == gamepad1.right_bumper) claw.stop(); //stop
+            if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
+            if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
+            if(gamepad2.left_bumper == gamepad2.right_bumper) claw.stop(); //stop
 
 //            if(gamepad1.dpad_up || gamepad1.dpad_down) {   //if dpad is clicked, set mode to run using encoder & move up, down, or stop
 //                lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -87,12 +87,10 @@ public class TeleOpMode extends LinearOpMode {
 //                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            }
 
-            if (gamepad1.dpad_up && !gamepad1.dpad_down) lifter.moveUp(); //up
-            if (!gamepad1.dpad_up && gamepad1.dpad_down) lifter.moveDown(); //down
-            if (gamepad1.dpad_up == gamepad1.dpad_down) lifter.stop(); //stop
+            if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
+            if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
+            if (gamepad2.dpad_up == gamepad2.dpad_down) lifter.stop(); //stop
 
-            telemetry.addData("Positions", lifter.getPositions());
-            telemetry.addData("Target Positions", lifter.getTargetPositions());
             telemetry.update();
         }
     }

@@ -91,6 +91,7 @@ public class TeleOpMode extends LinearOpMode {
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
             if (gamepad2.dpad_up == gamepad2.dpad_down) lifter.stop(); //stop
 
+            telemetry.addData("Lifter positions ", lifter.getPositions());
             telemetry.update();
         }
     }

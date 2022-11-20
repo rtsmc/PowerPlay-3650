@@ -66,7 +66,7 @@ public class Auto extends LinearOpMode{
                     break;
                 case 3:
                     mecanumDrive.driveVelocity(0.6, 0.6, 0.6, 0.6);
-                    sleep(800);
+                    sleep(700);
                     mecanumDrive.driveVelocity(0.6, -0.6, -0.6, 0.6);
                     sleep(800);
                     break;

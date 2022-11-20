@@ -21,15 +21,15 @@ public class ColorDetector extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
         //Cyan
-        Scalar CyanLowHSV = new Scalar(80, 70, 70);
+        Scalar CyanLowHSV = new Scalar(80, 50, 40);
         Scalar CyanHighHSV = new Scalar(97, 255, 255);
 
         //Yellow
-        Scalar YellowLowHSV = new Scalar(20, 70, 70);
+        Scalar YellowLowHSV = new Scalar(20, 50, 40);
         Scalar YellowHighHSV = new Scalar(34, 255, 255);
 
         //Magenta
-        Scalar MagentaLowHSV = new Scalar(136, 70, 70);
+        Scalar MagentaLowHSV = new Scalar(136, 50, 40);
         Scalar MagentaHighHSV = new Scalar(160, 255, 255);
 
         Mat cyanMat = mat.submat(rect);

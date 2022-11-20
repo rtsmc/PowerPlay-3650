@@ -16,7 +16,7 @@ public class MecanumDrive {
         this.backLeft = backLeft;
         this.backRight = backRight;
 
-        //reverse two motors on one side so forward is always positive values
+        //reverse two motors on one side so positive values always make wheels spin forwards
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 

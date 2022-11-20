@@ -1,77 +1,71 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ColorDetector extends OpenCvPipeline {
-    Mat CyanMat = new Mat();
-    Mat YellowMat = new Mat();
-    Mat MagentaMat = new Mat();
-    Rect leftRect = new Rect(new Point(0, 200), new Point(630, 720));
-    Rect rightRect = new Rect(new Point(650, 200), new Point(1270, 720));
-    double percentColorThreshold = 0.10;
+    Mat mat = new Mat();
+    Rect rect = new Rect(new Point(1140, 60), new Point(770, 620));
+    double magentaValue;
+    double yellowValue;
+    double cyanValue;
     private int level;
-//    private double maxArea = 0;
-//    private Rect maxRect;
 
     @Override
     public Mat processFrame(Mat input) {
-
-
-        //creates 3 mats
-        Imgproc.cvtColor(input, CyanMat, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(input, YellowMat, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(input, MagentaMat, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
         //Cyan
-        Scalar CyanLowHSV = new Scalar(80, 100, 40);
-        Scalar CyanHighHSV = new Scalar(100, 255, 255);
+        Scalar CyanLowHSV = new Scalar(80, 70, 70);
+        Scalar CyanHighHSV = new Scalar(97, 255, 255);
 
         //Yellow
-        Scalar YellowLowHSV = new Scalar(20, 100, 40);
-        Scalar YellowHighHSV = new Scalar(40, 255, 255);
+        Scalar YellowLowHSV = new Scalar(20, 70, 70);
+        Scalar YellowHighHSV = new Scalar(34, 255, 255);
 
         //Magenta
-        Scalar MagentaLowHSV = new Scalar(140, 100, 40);
+        Scalar MagentaLowHSV = new Scalar(136, 70, 70);
         Scalar MagentaHighHSV = new Scalar(160, 255, 255);
 
+        Mat cyanMat = mat.submat(rect);
+        Mat yellowMat = mat.submat(rect);
+        Mat magentaMat = mat.submat(rect);
 
-        Core.inRange(CyanMat, CyanLowHSV, CyanHighHSV, CyanMat);
-        Core.inRange(YellowMat, YellowLowHSV, YellowHighHSV, YellowMat);
-        Core.inRange(MagentaMat, MagentaLowHSV, MagentaHighHSV, MagentaMat);
+        Core.inRange(cyanMat, CyanLowHSV, CyanHighHSV, cyanMat);
+        Core.inRange(yellowMat, YellowLowHSV, YellowHighHSV, yellowMat);
+        Core.inRange(magentaMat, MagentaLowHSV, MagentaHighHSV, magentaMat);
 
+        Imgproc.rectangle(mat, rect, new Scalar(255, 0, 0));
 
-        int CyanValue = Core.sumElems(CyanMat).val[0];
-        int YellowValue = Core.sumElems(YellowMat).val[0];
-        int MagentaValue = Core.sumElems(MagentaMat).val[0];
+        double cyanValue = Core.sumElems(cyanMat).val[0] / rect.area() / 255;
+        double yellowValue = Core.sumElems(yellowMat).val[0] / rect.area() / 255;
+        double magentaValue = Core.sumElems(magentaMat).val[0] / rect.area() / 255;
 
-        CyanMat.release();
-        YellowMat.release();
-        MagentaMat.release();
+        cyanMat.release();
+        yellowMat.release();
+        magentaMat.release();
 
-        if (CyanValue > MagentaValue) {
-            if (CyanValue > YellowValue) {
-                return 0;
-            }
-            return 1;
+        if(cyanValue > magentaValue && cyanValue > yellowValue){
+            level = 1;  //cyan
+        } else if(magentaValue > yellowValue) {
+            level = 2;  //magenta
+        } else {
+            level = 3;  //yellow
         }
-        if (MagentaValue > YellowValue) {
-            return 2;
-        }
-        return 1;
+
+        return mat;
     }
 
     public int getLevel(){
         return level;
+    }
+
+    public String getValues(){
+        return "magenta " + magentaValue + "cyan " + cyanValue + "yellow " + yellowValue;
     }
 }

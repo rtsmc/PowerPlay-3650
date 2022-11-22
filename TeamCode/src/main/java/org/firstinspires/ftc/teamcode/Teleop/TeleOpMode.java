@@ -68,7 +68,12 @@ public class TeleOpMode extends LinearOpMode {
             fR -= gamepad1.right_stick_x;
             bL += gamepad1.right_stick_x;
             bR -= gamepad1.right_stick_x;
-            mecanumDrive.driveVelocity(fL, fR, bL, bR);
+
+            if(gamepad1.right_bumper){
+                mecanumDrive.driveVelocity(fL, fR, bL, bR);
+            } else {
+                mecanumDrive.driveVelocity(fL/2, fR/2, bL/2, bR/2);
+            }
 
             if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
             if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close

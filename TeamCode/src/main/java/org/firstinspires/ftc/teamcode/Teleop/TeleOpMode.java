@@ -83,6 +83,11 @@ public class TeleOpMode extends LinearOpMode {
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
             if (gamepad2.dpad_up == gamepad2.dpad_down) lifter.stop(); //stop
 
+            if (gamepad2.a) lifter.setTargetPosition(0);
+            if (gamepad2.b) lifter.setTargetPosition(1);
+            if (gamepad2.x) lifter.setTargetPosition(2);
+            if (gamepad2.y) lifter.setTargetPosition(3);
+
             lifter.changeTarget((int)(-50*gamepad2.left_stick_y));
             lifter.runToTarget();
 

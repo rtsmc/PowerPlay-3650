@@ -13,49 +13,49 @@ public class ColorDetector extends OpenCvPipeline {
     Rect rect = new Rect(new Point(1140, 60), new Point(770, 620));
     double magentaValue;
     double yellowValue;
-    double cyanValue;
+    double greenValue;
     private int level;
 
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        //Cyan
-        Scalar CyanLowHSV = new Scalar(75, 20, 20);
-        Scalar CyanHighHSV = new Scalar(100, 255, 255);
+        //Green
+        Scalar GreenLowHSV = new Scalar(39, 50, 50);
+        Scalar GreenHighHSV = new Scalar(78, 255, 255);
 
         //Yellow
-        Scalar YellowLowHSV = new Scalar(15, 20, 20);
-        Scalar YellowHighHSV = new Scalar(40, 255, 255);
+        Scalar YellowLowHSV = new Scalar(18, 50, 50);
+        Scalar YellowHighHSV = new Scalar(30, 255, 255);
 
         //Magenta
-        Scalar MagentaLowHSV = new Scalar(130, 20, 20);
+        Scalar MagentaLowHSV = new Scalar(130, 50, 50);
         Scalar MagentaHighHSV = new Scalar(170, 255, 255);
 
-        Mat cyanMat = mat.submat(rect);
+        Mat greenMat = mat.submat(rect);
         Mat yellowMat = mat.submat(rect);
         Mat magentaMat = mat.submat(rect);
 
-        Core.inRange(cyanMat, CyanLowHSV, CyanHighHSV, cyanMat);
+        Core.inRange(greenMat, GreenLowHSV, GreenHighHSV, greenMat);
         Core.inRange(yellowMat, YellowLowHSV, YellowHighHSV, yellowMat);
         Core.inRange(magentaMat, MagentaLowHSV, MagentaHighHSV, magentaMat);
 
         Imgproc.rectangle(mat, rect, new Scalar(255, 0, 0));
 
-        double cyanValue = Core.sumElems(cyanMat).val[0] / rect.area() / 255;
+        double greenValue = Core.sumElems(greenMat).val[0] / rect.area() / 255;
         double yellowValue = Core.sumElems(yellowMat).val[0] / rect.area() / 255;
         double magentaValue = Core.sumElems(magentaMat).val[0] / rect.area() / 255;
 
-        cyanMat.release();
+        greenMat.release();
         yellowMat.release();
         magentaMat.release();
 
-        if(cyanValue > magentaValue && cyanValue > yellowValue){
-            level = 1;  //cyan
-        } else if(magentaValue > yellowValue) {
-            level = 2;  //magenta
+        if(yellowValue > magentaValue && yellowValue > greenValue){
+            level = 3;
+        } else if(magentaValue > greenValue) {
+            level = 2;
         } else {
-            level = 3;  //yellow
+            level = 1;
         }
 
         return mat;
@@ -66,6 +66,6 @@ public class ColorDetector extends OpenCvPipeline {
     }
 
     public String getValues(){
-        return "magenta " + magentaValue + "cyan " + cyanValue + "yellow " + yellowValue;
+        return "magenta " + magentaValue + "green " + greenValue + "yellow " + yellowValue;
     }
 }

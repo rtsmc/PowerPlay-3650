@@ -15,6 +15,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class Auto extends LinearOpMode{
     OpenCvWebcam webcam;
     private ColorDetector detector;
+    int[] detections = new int[100];
     private int level;
 
     @Override
@@ -45,12 +46,20 @@ public class Auto extends LinearOpMode{
 
         telemetry.addLine("Waiting for Start");
         telemetry.update();
-        waitForStart();
+        int i = 0;
+        while(!isStarted()){
+            if(i == 99){
+                i = 0;
+            }
+            detections[i] = detector.getLevel();
+            i++;
+            telemetry.addData("average of detections", roundedAverage(detections));
+            telemetry.update();
+        }
 
         while(opModeIsActive()){
-            level = detector.getLevel();
+            level = roundedAverage(detections);
             telemetry.addData("level", level);
-            telemetry.addData("values", detector.getValues());
             telemetry.update();
 
             switch(level) {
@@ -66,7 +75,7 @@ public class Auto extends LinearOpMode{
                     break;
                 case 3:
                     mecanumDrive.driveVelocity(0.6, 0.6, 0.6, 0.6);
-                    sleep(700);
+                    sleep(800);
                     mecanumDrive.driveVelocity(0.6, -0.6, -0.6, 0.6);
                     sleep(800);
                     break;
@@ -75,5 +84,13 @@ public class Auto extends LinearOpMode{
                 break;
             }
         }
+    }
+
+    private int roundedAverage(int[] arr) {
+        double sum = 0;
+        for(int i = 0; i < arr.length; i++){
+            sum+=arr[i];
+        }
+        return (int)(Math.round(sum/arr.length));
     }
 }

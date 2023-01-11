@@ -9,11 +9,14 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+import org.firstinspires.ftc.teamcode.Robot.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Lifter;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Robot.MecanumDrive;
@@ -62,6 +65,10 @@ public class Auto extends LinearOpMode{
         //drive
                 SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
 
+
+        //Claw
+        Claw claw = new Claw(hardwareMap.get(CRServo.class, "clawServo"));
+
         //Set intial postion
         Pose2d startPose = new Pose2d(-36, 65, Math.toRadians(270));  //change this based on the starting location
         mecanumDrive.setPoseEstimate(startPose);
@@ -102,17 +109,30 @@ public class Auto extends LinearOpMode{
 
             //Starting location to first pole
         Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
+                .addDisplacementMarker(0.001, () -> {
+                    //TODO lifer up,claw
+                })
+
                 .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
                 .build();
 
             //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
+                .addDisplacementMarker(() -> {
+                    //TODO lower lifter, release claw
+                })
                 .splineToSplineHeading(new Pose2d(startPole.end().getX() + 0.0001, startPole.end().getX(), startPole.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
                 .build();
 
             //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
+                .addTemporalMarker(0, () ->{
+                    //TODO set power to zero
+                })
+                .addDisplacementMarker(() -> {
+                    //TODO raise lifter, grab cone
+                })
                 .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
                 .build();
@@ -141,9 +161,6 @@ public class Auto extends LinearOpMode{
             //TODO: add lifer and claw to trajectory code
 
 
-
-
-
         waitForStart();
         currentState = State.Start_Pole;
         mecanumDrive.followTrajectoryAsync(startPole);
@@ -152,7 +169,6 @@ public class Auto extends LinearOpMode{
             telemetry.addData("level", level);
             telemetry.update();
             switch (currentState) {
-                //
 
                 case Start_Pole:
                     if (!mecanumDrive.isBusy()) {
@@ -160,7 +176,6 @@ public class Auto extends LinearOpMode{
                         mecanumDrive.followTrajectoryAsync(poleCone);
                     }
                     break;
-
 
                 case Pole_Cone:
                     if (!mecanumDrive.isBusy()) {
@@ -171,20 +186,22 @@ public class Auto extends LinearOpMode{
 
                 case Cone_Pole:
                     if (!mecanumDrive.isBusy()) {
-
                         currentState = State.Park;
-                        if (level == 1) {
-                            mecanumDrive.followTrajectoryAsync(poleParking1);
-                        }
+                        if (level == 1) mecanumDrive.followTrajectoryAsync(poleParking1);
 
-                        if (level == 2) {
-                            mecanumDrive.followTrajectoryAsync(poleParking2);
-                        }
+                        if (level == 2) mecanumDrive.followTrajectoryAsync(poleParking2);
 
-                        if (level == 3) {
-                            mecanumDrive.followTrajectoryAsync(poleParking2);
-                        }
+                        if (level == 3) mecanumDrive.followTrajectoryAsync(poleParking2);
                     }
+                    break;
+
+                case Park:
+                    if (!mecanumDrive.isBusy()) {
+                        currentState = State.IDLE;
+                    }
+                    break;
+
+                case IDLE:
                     break;
 
                 //TODO, add switch case

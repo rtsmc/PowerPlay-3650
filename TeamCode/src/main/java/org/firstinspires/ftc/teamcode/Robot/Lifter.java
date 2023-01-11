@@ -18,6 +18,7 @@ public class Lifter {
         targetPosition = 0;
         mode = 0;
 
+
         right.setDirection(DcMotorSimple.Direction.REVERSE);
 
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

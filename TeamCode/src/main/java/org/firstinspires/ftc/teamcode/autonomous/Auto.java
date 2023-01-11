@@ -57,6 +57,8 @@ public class Auto extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
 
+        //keep track of cycles between cones and pole
+        int cycle = 0;
 
         //lifter
         Lifter lifter = new Lifter(hardwareMap.get(DcMotorEx.class, "leftLifter"),
@@ -127,11 +129,14 @@ public class Auto extends LinearOpMode{
 
             //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-                .addTemporalMarker(0, () ->{
+                .addTemporalMarker(0, () -> {
                     //TODO set power to zero
                 })
                 .addDisplacementMarker(() -> {
                     //TODO raise lifter, grab cone
+                })
+                .addTemporalMarker(0.5, () -> {
+                    //TODO set power to max
                 })
                 .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
@@ -139,6 +144,7 @@ public class Auto extends LinearOpMode{
 
             //pole to parking 1
         Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
+
                 .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
                 .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(300)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(-12, 36, Math.toRadians(270)), Math.toRadians(0))
@@ -173,6 +179,7 @@ public class Auto extends LinearOpMode{
                 case Start_Pole:
                     if (!mecanumDrive.isBusy()) {
                         currentState = State.Pole_Cone;
+
                         mecanumDrive.followTrajectoryAsync(poleCone);
                     }
                     break;
@@ -186,12 +193,19 @@ public class Auto extends LinearOpMode{
 
                 case Cone_Pole:
                     if (!mecanumDrive.isBusy()) {
-                        currentState = State.Park;
-                        if (level == 1) mecanumDrive.followTrajectoryAsync(poleParking1);
+                        cycle++;
+                        if (cycle == 5) {
+                            currentState = State.Park;
+                            if (level == 1) mecanumDrive.followTrajectoryAsync(poleParking1);
 
-                        if (level == 2) mecanumDrive.followTrajectoryAsync(poleParking2);
+                            if (level == 2) mecanumDrive.followTrajectoryAsync(poleParking2);
 
-                        if (level == 3) mecanumDrive.followTrajectoryAsync(poleParking2);
+                            if (level == 3) mecanumDrive.followTrajectoryAsync(poleParking2);
+                        }
+                        else {
+                            currentState = State.Pole_Cone;
+                            mecanumDrive.followTrajectoryAsync(poleCone);
+                        }
                     }
                     break;
 

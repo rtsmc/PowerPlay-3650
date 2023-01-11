@@ -114,13 +114,21 @@ public class Auto extends LinearOpMode{
                     .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
                     .build();
 
-            //Pole to parking TODO
+            //pole to parking 1
+            Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
+                    .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
+                    .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(270)), Math.toRadians(90))
+                    .splineToSplineHeading(new Pose2d(-60, 36, Math.toRadians(270)), Math.toRadians(180))
+                    .build();
+
+
+            //TODO: pole to parking2 & 3
 
 
 
 
 
-
+        waitForStart();
         currentState = State.Start_Pole;
         mecanumDrive.followTrajectoryAsync(startPole);
         while(opModeIsActive()){
@@ -128,11 +136,34 @@ public class Auto extends LinearOpMode{
             telemetry.addData("level", level);
             telemetry.update();
             switch (currentState) {
-                //case startPole:
+                //
+
+                case Start_Pole:
+                    if (!mecanumDrive.isBusy()) {
+                        currentState = State.Pole_Cone;
+                        mecanumDrive.followTrajectoryAsync(poleCone);
+                    }
+                    break;
+
+
+                case Pole_Cone:
+                    if (!mecanumDrive.isBusy()) {
+                        currentState = State.Cone_Pole;
+                        mecanumDrive.followTrajectoryAsync(conePole);
+                    }
+                    break;
+
+                case Cone_Pole:
+                    if (!mecanumDrive.isBusy()) {
+                        currentState = State.Pole_Parking1;
+                        mecanumDrive.followTrajectoryAsync(poleParking1);
+                    }
+                    break;
+
                 //TODO, add switch case
 
             }
-
+            mecanumDrive.update();
 
             /*
             switch(level) {

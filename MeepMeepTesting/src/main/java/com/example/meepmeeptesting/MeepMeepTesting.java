@@ -48,14 +48,30 @@ public class MeepMeepTesting {
 
  */
 
+                        /*
+
                         drive.trajectorySequenceBuilder(new Pose2d(-29, 5, Math.toRadians(315)))
                                 .splineToSplineHeading(new Pose2d(-29.0001, 5.001, Math.toRadians(315)), Math.toRadians(170))
                                 .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
                                 .build()
 
 
-                );
+                         */
 
+                        /*   Pole -> parking 1
+
+                         */
+                          drive.trajectorySequenceBuilder(new Pose2d(-29, 5, Math.toRadians(315)))
+                                  .splineToSplineHeading(new Pose2d(-29.0001, 5.0001, Math.toRadians(315)), Math.toRadians(100))
+                                  .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(270)), Math.toRadians(90))
+                                  .splineToSplineHeading(new Pose2d(-60, 36, Math.toRadians(270)), Math.toRadians(180))
+                                  .build()
+
+
+
+
+
+                );
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)

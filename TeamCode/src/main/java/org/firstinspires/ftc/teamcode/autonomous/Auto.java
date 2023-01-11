@@ -34,9 +34,12 @@ public class Auto extends LinearOpMode{
         Start_Pole,        // Start -> first pole (raise arm)
         Pole_Cone,         // first pole -> cones (lower arm)
         Cone_Pole,         // cones -> pole (raise arm)
+        Park,              // parks the robot
+        /*
         Pole_Parking1,     // pole -> parking 1
         Pole_Parking2,     // pole -> parking 2
         Pole_Parking3,     // pole -> parking 3
+         */
         Drop,              // Drop Cone
         Grab,              // Grab Cone
         IDLE               // Our bot will enter the IDLE state when done
@@ -98,31 +101,44 @@ public class Auto extends LinearOpMode{
         //trajectorys
 
             //Starting location to first pole
-            Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
-                    .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
-                    .build();
+        Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
+                .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
+                .build();
 
             //Pole to cones
-            Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
-                    .splineToSplineHeading(new Pose2d(startPole.end().getX() + 0.0001, startPole.end().getX(), startPole.end().getHeading()), Math.toRadians(170))
-                    .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
-                    .build();
+        Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
+                .splineToSplineHeading(new Pose2d(startPole.end().getX() + 0.0001, startPole.end().getX(), startPole.end().getHeading()), Math.toRadians(170))
+                .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
+                .build();
 
             //cones to pole
-            Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-                    .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
-                    .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
-                    .build();
+        Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
+                .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
+                .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
+                .build();
 
             //pole to parking 1
-            Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
-                    .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
-                    .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(270)), Math.toRadians(90))
-                    .splineToSplineHeading(new Pose2d(-60, 36, Math.toRadians(270)), Math.toRadians(180))
-                    .build();
+        Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
+                .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
+                .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(300)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(-12, 36, Math.toRadians(270)), Math.toRadians(0))
+                .build();
 
+            //pole to parking 2
 
-            //TODO: pole to parking2 & 3
+        Trajectory poleParking2 = mecanumDrive.trajectoryBuilder(conePole.end())
+                .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
+                .splineToSplineHeading(new Pose2d(-36, 36, Math.toRadians(90)), Math.toRadians(90))
+                .build();
+
+            //pole to parking 3
+        Trajectory poleParking3 = mecanumDrive.trajectoryBuilder(conePole.end())
+                .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
+                .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(270)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(-60, 36, Math.toRadians(270)), Math.toRadians(180))
+                .build();
+
+            //TODO: add lifer and claw to trajectory code
 
 
 
@@ -155,8 +171,19 @@ public class Auto extends LinearOpMode{
 
                 case Cone_Pole:
                     if (!mecanumDrive.isBusy()) {
-                        currentState = State.Pole_Parking1;
-                        mecanumDrive.followTrajectoryAsync(poleParking1);
+
+                        currentState = State.Park;
+                        if (level == 1) {
+                            mecanumDrive.followTrajectoryAsync(poleParking1);
+                        }
+
+                        if (level == 2) {
+                            mecanumDrive.followTrajectoryAsync(poleParking2);
+                        }
+
+                        if (level == 3) {
+                            mecanumDrive.followTrajectoryAsync(poleParking2);
+                        }
                     }
                     break;
 

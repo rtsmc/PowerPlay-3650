@@ -129,7 +129,7 @@ public class Auto extends LinearOpMode{
             telemetry.update();
             switch (currentState) {
                 //case startPole:
-
+                //TODO, add switch case
 
             }
 

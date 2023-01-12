@@ -60,6 +60,7 @@ public class Auto extends LinearOpMode{
         //keep track of cycles between cones and pole
         int cycle = 0;
 
+
         //lifter
         Lifter lifter = new Lifter(hardwareMap.get(DcMotorEx.class, "leftLifter"),
                 hardwareMap.get(DcMotorEx.class, "rightLifter"));
@@ -112,7 +113,9 @@ public class Auto extends LinearOpMode{
             //Starting location to first pole
         Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
                 .addDisplacementMarker(0.001, () -> {
-                    //TODO lifer up,claw
+                    lifter.setTargetPosition(3);
+                    lifter.runToTarget();
+                    //TODO claw
                 })
 
                 .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
@@ -121,7 +124,8 @@ public class Auto extends LinearOpMode{
             //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
                 .addDisplacementMarker(() -> {
-                    //TODO lower lifter, release claw
+                    lifter.setTargetPosition(0);
+                    lifter.runToTarget();
                 })
                 .splineToSplineHeading(new Pose2d(startPole.end().getX() + 0.0001, startPole.end().getX(), startPole.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
@@ -129,15 +133,6 @@ public class Auto extends LinearOpMode{
 
             //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-                .addTemporalMarker(0, () -> {
-                    //TODO set power to zero
-                })
-                .addDisplacementMarker(() -> {
-                    //TODO raise lifter, grab cone
-                })
-                .addTemporalMarker(0.5, () -> {
-                    //TODO set power to max
-                })
                 .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
                 .build();
@@ -186,15 +181,23 @@ public class Auto extends LinearOpMode{
 
                 case Pole_Cone:
                     if (!mecanumDrive.isBusy()) {
+                        currentState = State.Grab;
+
+                        //TODO: grab thing
+                        lifter.setTargetPosition(3);
+                        lifter.runToTarget();
+                        sleep(200);
                         currentState = State.Cone_Pole;
                         mecanumDrive.followTrajectoryAsync(conePole);
                     }
                     break;
-
                 case Cone_Pole:
                     if (!mecanumDrive.isBusy()) {
                         cycle++;
                         if (cycle == 5) {
+                            //TODO: claw
+                            lifter.setTargetPosition(0);
+                            lifter.runToTarget();
                             currentState = State.Park;
                             if (level == 1) mecanumDrive.followTrajectoryAsync(poleParking1);
 

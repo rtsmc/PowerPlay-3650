@@ -80,9 +80,6 @@ public class Auto extends LinearOpMode{
         Pose2d startPose = new Pose2d(-36, 65, Math.toRadians(270));  //change this based on the starting location
         mecanumDrive.setPoseEstimate(startPose);
 
-
-
-
         //opencv
         detector = new ColorDetector();
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
@@ -112,9 +109,9 @@ public class Auto extends LinearOpMode{
             telemetry.update();
         }
 
-        //trajectorys
+        //trajectories
 
-            //Starting location to first pole
+        //Starting location to first pole
         Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
                 .addDisplacementMarker(0.001, () -> {
                     lifter.setTargetPosition(3);
@@ -122,11 +119,10 @@ public class Auto extends LinearOpMode{
                     claw.stayClosed();
 
                 })
-
                 .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
                 .build();
 
-            //Pole to cones
+        //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
                 .addDisplacementMarker(() -> {
                     claw.stayOpen();
@@ -137,36 +133,33 @@ public class Auto extends LinearOpMode{
                 .splineToSplineHeading(new Pose2d(-65, 12, Math.toRadians(180)), Math.toRadians(180))
                 .build();
 
-            //cones to pole
+        //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
                 .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 0.0001, poleCone.end().getX(), poleCone.end().getHeading()), Math.toRadians(170))
                 .splineToSplineHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(170))
                 .build();
 
-            //pole to parking 1
+        //pole to parking 1
         Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
-
                 .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
                 .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(300)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(-12, 36, Math.toRadians(270)), Math.toRadians(0))
                 .build();
 
-            //pole to parking 2
-
+        //pole to parking 2
         Trajectory poleParking2 = mecanumDrive.trajectoryBuilder(conePole.end())
                 .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
                 .splineToSplineHeading(new Pose2d(-36, 36, Math.toRadians(90)), Math.toRadians(90))
                 .build();
 
-            //pole to parking 3
+        //pole to parking 3
         Trajectory poleParking3 = mecanumDrive.trajectoryBuilder(conePole.end())
                 .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
                 .splineToSplineHeading(new Pose2d(-36, 24, Math.toRadians(270)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(-60, 36, Math.toRadians(270)), Math.toRadians(180))
                 .build();
 
-            //TODO: add lifer and claw to trajectory code
-
+        //TODO: add lifer and claw to trajectory code
 
         waitForStart();
         currentState = State.Start_Pole;
@@ -231,34 +224,8 @@ public class Auto extends LinearOpMode{
 
             }
             mecanumDrive.update();
-
-            /*
-            switch(level) {
-                case 1:
-                    mecanumDrive.driveVelocity(0.6, 0.6, 0.6, 0.6);
-                    sleep(800);
-                    mecanumDrive.driveVelocity(-0.6, 0.6, 0.6, -0.6);
-                    sleep(800);
-                    break;
-                case 2:
-                    mecanumDrive.driveVelocity(0.6, 0.6, 0.6, 0.6);
-                    sleep(800);
-                    break;
-                case 3:
-                    mecanumDrive.driveVelocity(0.6, 0.6, 0.6, 0.6);
-                    sleep(800);
-                    mecanumDrive.driveVelocity(0.6, -0.6, -0.6, 0.6);
-                    sleep(750);
-                    break;
-            }
-            if(level != 0){
-                break;
-            }
-            */
-
         }
     }
-
 
     private int roundedAverage(int[] arr) {
         double sum = 0;

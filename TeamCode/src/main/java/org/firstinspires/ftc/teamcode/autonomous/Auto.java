@@ -2,6 +2,10 @@
 https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/AsyncFollowingFSM.java
 
  */
+
+//TODO, make the claw go to different heights when grabbing cone
+
+
 package org.firstinspires.ftc.teamcode.autonomous;
 
 
@@ -115,7 +119,8 @@ public class Auto extends LinearOpMode{
                 .addDisplacementMarker(0.001, () -> {
                     lifter.setTargetPosition(3);
                     lifter.runToTarget();
-                    //TODO claw
+                    claw.stayClosed();
+
                 })
 
                 .splineToLinearHeading(new Pose2d(-29, 5, Math.toRadians(315)), Math.toRadians(280))
@@ -124,6 +129,7 @@ public class Auto extends LinearOpMode{
             //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
                 .addDisplacementMarker(() -> {
+                    claw.stayOpen();
                     lifter.setTargetPosition(0);
                     lifter.runToTarget();
                 })
@@ -181,9 +187,9 @@ public class Auto extends LinearOpMode{
 
                 case Pole_Cone:
                     if (!mecanumDrive.isBusy()) {
-                        currentState = State.Grab;
 
                         //TODO: grab thing
+                        claw.stayClosed();
                         lifter.setTargetPosition(3);
                         lifter.runToTarget();
                         sleep(200);
@@ -195,7 +201,7 @@ public class Auto extends LinearOpMode{
                     if (!mecanumDrive.isBusy()) {
                         cycle++;
                         if (cycle == 5) {
-                            //TODO: claw
+                            claw.stayOpen();
                             lifter.setTargetPosition(0);
                             lifter.runToTarget();
                             currentState = State.Park;

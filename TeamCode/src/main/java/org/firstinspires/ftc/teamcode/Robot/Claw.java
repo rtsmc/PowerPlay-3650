@@ -35,6 +35,5 @@ public class Claw {
             servo.setPower(power);
             if (!closed) break;
         }
-
     }
 }

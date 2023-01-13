@@ -8,7 +8,7 @@ public class Lifter {
     private DcMotorEx left;
     private DcMotorEx right;
     private static final int LIFTER_VELOCITY = 2700;
-    private static final int[] POSITIONS = {0, 2600, 4200, 5800};
+    private static final int[] POSITIONS = {0, 2600, 4200, 5800, 770};
     private static int targetPosition;
     private static int mode; // 0: Manual; 1: Run to position
 

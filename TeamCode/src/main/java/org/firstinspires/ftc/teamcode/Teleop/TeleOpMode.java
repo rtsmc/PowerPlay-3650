@@ -77,7 +77,7 @@ public class TeleOpMode extends LinearOpMode {
 
             if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
             if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
-            if(gamepad2.left_bumper == gamepad2.right_bumper) claw.stop(); //stop
+            claw.update();
 
             if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down

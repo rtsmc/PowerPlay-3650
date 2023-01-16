@@ -75,15 +75,9 @@ public class TeleOpMode extends LinearOpMode {
                 mecanumDrive.driveVelocity(fL/2, fR/2, bL/2, bR/2);
             }
 
-            if(!gamepad2.left_bumper && gamepad2.right_bumper) {
-                claw.open(); //open
-            }
-            if(gamepad2.left_bumper && !gamepad2.right_bumper) {
-                claw.close(); //close
-            }
-            if(gamepad2.left_bumper == gamepad2.right_bumper) {
-                claw.stop(); //stop
-            }
+            if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
+            if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
+            claw.update();
 
             if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
@@ -100,8 +94,6 @@ public class TeleOpMode extends LinearOpMode {
             telemetry.addData("Lifter positions", "Left = "+lifter.getPositions()[0]+", Right = "+lifter.getPositions()[1]);
             telemetry.addData("Target position", lifter.getTargetPosition());
             telemetry.addData("Current mode", lifter.getMode());
-            telemetry.addData("gamepad2 left bumper", gamepad2.left_bumper);
-            telemetry.addData("gamepad2 right bumper", gamepad2.right_bumper);
             telemetry.update();
         }
     }

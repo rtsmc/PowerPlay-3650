@@ -21,9 +21,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-import java.io.*;
-import java.lang.Thread;
-
 @Autonomous
 public class Auto extends LinearOpMode{
 
@@ -73,7 +70,6 @@ public class Auto extends LinearOpMode{
         mecanumDrive.setPoseEstimate(startPose);
 
         //var to keep track of inital time for delays
-        Thread t = new Thread("Sleep");
         long endTime;
         //opencv
         detector = new ColorDetector();
@@ -184,24 +180,14 @@ public class Auto extends LinearOpMode{
                     }
                     break;
                 case Pole_Cone:
-                    if (lifter.getPositions()[0] < 4000) {
-                        claw.close();
-                    }
-
-                    if (lifter.getPositions()[0] < 1200) {
-                        claw.open();
-                    }
-
                     if (!mecanumDrive.isBusy()) {
                         claw.close();
-                        t.start();
-                        t.sleep(1000);
-//                        endTime = System.currentTimeMillis() + 200;
-//                        while (true) {
-//                            if (System.currentTimeMillis() >= endTime) {
-//                                break;
-//                            }
-//                        }
+                        endTime = System.currentTimeMillis() + 200;
+                        while (true) {
+                            if (System.currentTimeMillis() >= endTime) {
+                                break;
+                            }
+                        }
                         lifter.setTargetPosition(3);
                         currentState = State.Grab;
 

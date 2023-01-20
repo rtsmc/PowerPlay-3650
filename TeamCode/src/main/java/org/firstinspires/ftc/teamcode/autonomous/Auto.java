@@ -114,12 +114,12 @@ public class Auto extends LinearOpMode{
 
         //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
-            .splineToSplineHeading(new Pose2d(29.0001, 6, Math.toRadians(240)), Math.toRadians(60),
-                    SampleMecanumDrive.getVelocityConstraint(0.01, 0.01, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(0.01))
+            .splineToSplineHeading(new Pose2d(29.001, 6, Math.toRadians(240)), Math.toRadians(60),
+                    SampleMecanumDrive.getVelocityConstraint(1, 1, DriveConstants.TRACK_WIDTH),
+                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
             .splineToSplineHeading(new Pose2d(58, 12, Math.toRadians(0)), Math.toRadians(0))
             .splineToConstantHeading(
-                    new Vector2d(71.25, 12), Math.toRadians(0),
+                    new Vector2d(69, 12), Math.toRadians(0),
                     SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
             )
@@ -127,7 +127,7 @@ public class Auto extends LinearOpMode{
 
         //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-            .splineToSplineHeading(new Pose2d(poleCone.end().getX() + 1e-6, poleCone.end().getY(), Math.toRadians(0)), Math.toRadians(180),
+            .splineToSplineHeading(new Pose2d(69.0001, 12, Math.toRadians(0)), Math.toRadians(180),
                     SampleMecanumDrive.getVelocityConstraint(1, 1, DriveConstants.TRACK_WIDTH),
                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
             .splineToSplineHeading(new Pose2d(37, 10, Math.toRadians(230)), Math.toRadians(220))

@@ -1,4 +1,4 @@
-
+//TODO, make the claw go to different heights when grabbing cone
 
 package org.firstinspires.ftc.teamcode.autonomous;
 
@@ -54,7 +54,7 @@ public class Auto extends LinearOpMode{
 
         //keep track of cycles between cones and pole
         int cycle = 0;
-        
+
         //lifter
         Lifter lifter = new Lifter(hardwareMap.get(DcMotorEx.class, "leftLifter"),
                 hardwareMap.get(DcMotorEx.class, "rightLifter"));
@@ -69,8 +69,6 @@ public class Auto extends LinearOpMode{
         Pose2d startPose = new Pose2d(36, 65, Math.toRadians(270));  //change this based on the starting location
         mecanumDrive.setPoseEstimate(startPose);
 
-        //var to keep track of inital time for delays
-        long endTime;
         //opencv
         detector = new ColorDetector();
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
@@ -104,9 +102,9 @@ public class Auto extends LinearOpMode{
 
         //Starting location to first pole
         Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
-            .splineToSplineHeading(new Pose2d(34, 20, Math.toRadians(240)), Math.toRadians(250))
+            .splineToSplineHeading(new Pose2d(34, 20, Math.toRadians(230)), Math.toRadians(250))
             .splineToConstantHeading(
-                    new Vector2d(29, 6), Math.toRadians(250),
+                    new Vector2d(30, 5.5), Math.toRadians(250),
                     SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
             )
@@ -114,12 +112,10 @@ public class Auto extends LinearOpMode{
 
         //Pole to cones
         Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
-            .splineToSplineHeading(new Pose2d(29.001, 6, Math.toRadians(240)), Math.toRadians(60),
-                    SampleMecanumDrive.getVelocityConstraint(1, 1, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-            .splineToSplineHeading(new Pose2d(58, 12, Math.toRadians(0)), Math.toRadians(0))
+            .splineToSplineHeading(new Pose2d(30.001, 5.5, Math.toRadians(230)), Math.toRadians(60))
+            .splineToSplineHeading(new Pose2d(58, 12, Math.toRadians(0)), Math.toRadians(-20))
             .splineToConstantHeading(
-                    new Vector2d(69, 12), Math.toRadians(0),
+                    new Vector2d(69, 15), Math.toRadians(0),
                     SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
             )
@@ -127,9 +123,7 @@ public class Auto extends LinearOpMode{
 
         //cones to pole
         Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-            .splineToSplineHeading(new Pose2d(69.0001, 12, Math.toRadians(0)), Math.toRadians(180),
-                    SampleMecanumDrive.getVelocityConstraint(1, 1, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+            .splineToSplineHeading(new Pose2d(69.001, 15, Math.toRadians(0)), Math.toRadians(160))
             .splineToSplineHeading(new Pose2d(37, 10, Math.toRadians(230)), Math.toRadians(220))
             .splineToConstantHeading(
                     new Vector2d(30, 5.5), Math.toRadians(200),
@@ -158,6 +152,7 @@ public class Auto extends LinearOpMode{
             .splineToSplineHeading(new Pose2d(60, 36, Math.toRadians(270)), Math.toRadians(180))
             .build();
 
+        //TODO: add lifter and claw to trajectory code
 
         waitForStart();
 
@@ -175,22 +170,17 @@ public class Auto extends LinearOpMode{
                     if (!mecanumDrive.isBusy()) {
                         currentState = State.Pole_Cone;
                         claw.open();
-                        lifter.setTargetPosition(4 + cycle);
+                        sleep(400);
+                        lifter.setTargetPosition(4);
                         mecanumDrive.followTrajectoryAsync(poleCone);
                     }
                     break;
                 case Pole_Cone:
                     if (!mecanumDrive.isBusy()) {
-                        claw.close();
-                        endTime = System.currentTimeMillis() + 200;
-                        while (true) {
-                            if (System.currentTimeMillis() >= endTime) {
-                                break;
-                            }
-                        }
                         lifter.setTargetPosition(3);
                         currentState = State.Grab;
-
+                        claw.close();
+                        sleep(200);
                     }
                     break;
                 case Grab:

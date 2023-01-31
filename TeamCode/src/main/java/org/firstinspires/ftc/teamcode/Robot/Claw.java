@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 public class Claw {
     private CRServo servo;
-    private int power = 1;
+    long time;
+    private final double power = 1;
 
     public Claw (CRServo servo) {
         this.servo = servo;

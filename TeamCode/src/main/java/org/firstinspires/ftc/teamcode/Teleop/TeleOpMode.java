@@ -44,7 +44,7 @@ public class TeleOpMode extends LinearOpMode {
 
         while(opModeIsActive()){
             //Get the hypotenuse of the right triangle created by the position of the left gamepad stick on the x and y axis
-            double gamepadX = -gamepad1.left_stick_x;
+            double gamepadX = gamepad1.left_stick_x;
             double gamepadY = -gamepad1.left_stick_y;
             double r = Math.hypot(gamepadX, gamepadY);
             //get angle from imu
@@ -54,36 +54,39 @@ public class TeleOpMode extends LinearOpMode {
             double sinA = Math.sin(gyroAngle);
             double x = gamepadX*cosA - gamepadY*sinA;
             double y = gamepadX*sinA + gamepadY*cosA;
-            //get angle of the rotated vector and offset by PI/4, so that
-            //straight up is PI/4 instead of PI/2, so all wheels spin
-            //the same velocity & robot moves forward when joystick is pushed straight up.
+
+            //get angle of the rotated vector and offset by 45˚ or PI/4, since mecanum
+            //wheels have rollers at 45˚ to the forward direction, rotating by this amount
+            //makes the force vectors of the mecanum wheels match up with x and y components of
+            //the joystick position
             double angle = Math.atan2(y, x) - Math.PI/4;
+
             //Set powers for each wheel of the robot.
-            double fL = Math.sin(angle)*r;
-            double fR = Math.cos(angle)*r;
-            double bL = Math.cos(angle)*r;
-            double bR = Math.sin(angle)*r;
-            //Add or subract the x value of the right stick from motor powers to give turning control.
-            fL += gamepad1.right_stick_x;
-            fR -= gamepad1.right_stick_x;
-            bL += gamepad1.right_stick_x;
-            bR -= gamepad1.right_stick_x;
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            double max = Math.max(Math.abs(sin), Math.abs(cos));
+            double turn = gamepad1.right_stick_x;
+
+            double fL = cos*r/max+turn;
+            double fR = sin*r/max-turn;
+            double bL = sin*r/max+turn;
+            double bR = cos*r/max-turn;
+            if((r + Math.abs(turn)) > 1){
+                fL /= (r + Math.abs(turn));
+                fR /= (r + Math.abs(turn));
+                bL /= (r + Math.abs(turn));
+                bR /= (r + Math.abs(turn));
+            }
 
             if(gamepad1.right_bumper){
-                mecanumDrive.driveVelocity(fL, fR, bL, bR);
+                mecanumDrive.drive(fL, fR, bL, bR);
             } else {
-                mecanumDrive.driveVelocity(fL/2, fR/2, bL/2, bR/2);
+                mecanumDrive.drive(fL/2, fR/2, bL/2, bR/2);
             }
 
-            if(!gamepad2.left_bumper && gamepad2.right_bumper) {
-                claw.open(); //open
-            }
-            if(gamepad2.left_bumper && !gamepad2.right_bumper) {
-                claw.close(); //close
-            }
-            if(gamepad2.left_bumper == gamepad2.right_bumper) {
-                claw.stop(); //stop
-            }
+            if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
+            if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
+            if(gamepad2.left_bumper == gamepad2.right_bumper) claw.stop(); //stop
 
             if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
@@ -97,11 +100,7 @@ public class TeleOpMode extends LinearOpMode {
             lifter.changeTarget((int)(-50*gamepad2.left_stick_y));
             lifter.runToTarget();
 
-            telemetry.addData("Lifter positions", "Left = "+lifter.getPositions()[0]+", Right = "+lifter.getPositions()[1]);
-            telemetry.addData("Target position", lifter.getTargetPosition());
-            telemetry.addData("Current mode", lifter.getMode());
-            telemetry.addData("gamepad2 left bumper", gamepad2.left_bumper);
-            telemetry.addData("gamepad2 right bumper", gamepad2.right_bumper);
+            telemetry.addData("Encoder position", mecanumDrive.getPosition());
             telemetry.update();
         }
     }

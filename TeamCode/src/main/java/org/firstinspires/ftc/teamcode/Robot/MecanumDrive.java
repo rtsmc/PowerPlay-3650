@@ -33,10 +33,10 @@ public class MecanumDrive {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set all to run using encoder
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //drive by setting velocities for all motors
@@ -47,8 +47,19 @@ public class MecanumDrive {
         backRight.setVelocity(powerbR*2800);
     }
 
+    public void drive(double powerfL, double powerfR, double powerbL, double powerbR){
+        frontLeft.setPower(powerfL);
+        frontRight.setPower(powerfR);
+        backLeft.setPower(powerbL);
+        backRight.setPower(powerbR);
+    }
+
     //get velocities of motors, useful for debugging
     public String getVelocity(){
         return "FrontLeft " + frontLeft.getVelocity() + "\n FrontRight " + frontRight.getVelocity() + "\n BackLeft " + backLeft.getVelocity() + "\n backRight " + backRight.getVelocity();
+    }
+
+    public int getPosition(){
+        return frontLeft.getCurrentPosition();
     }
 }

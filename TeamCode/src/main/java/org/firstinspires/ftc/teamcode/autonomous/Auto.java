@@ -1,5 +1,3 @@
-//TODO, make the claw go to different heights when grabbing cone
-
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -30,16 +28,7 @@ public class Auto extends LinearOpMode{
 
     enum State {
         Start_Pole,        // Start -> first pole (raise arm)
-        Pole_Cone,         // first pole -> cones (lower arm)
-        Cone_Pole,         // cones -> pole (raise arm)
         Park,              // parks the robot
-        /*
-        Pole_Parking1,     // pole -> parking 1
-        Pole_Parking2,     // pole -> parking 2
-        Pole_Parking3,     // pole -> parking 3
-         */
-        Drop,              // Drop Cone
-        Grab,              // Grab Cone
         IDLE               // Our bot will enter the IDLE state when done
     }
 
@@ -51,9 +40,6 @@ public class Auto extends LinearOpMode{
     State currentState = State.IDLE;
     @Override
     public void runOpMode() throws InterruptedException {
-
-        //keep track of cycles between cones and pole
-        int cycle = 0;
 
         //lifter
         Lifter lifter = new Lifter(hardwareMap.get(DcMotorEx.class, "leftLifter"),
@@ -95,6 +81,7 @@ public class Auto extends LinearOpMode{
             detections[i] = detector.getLevel();
             i++;
             telemetry.addData("average of detections", roundedAverage(detections));
+            level = roundedAverage(detections);
             telemetry.update();
         }
 
@@ -102,111 +89,53 @@ public class Auto extends LinearOpMode{
 
         //Starting location to first pole
         Trajectory startPole = mecanumDrive.trajectoryBuilder(startPose)
-            .splineToSplineHeading(new Pose2d(34, 20, Math.toRadians(230)), Math.toRadians(250))
-            .splineToConstantHeading(
-                    new Vector2d(30, 5.5), Math.toRadians(250),
-                    SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-            )
-            .build();
-
-        //Pole to cones
-        Trajectory poleCone = mecanumDrive.trajectoryBuilder(startPole.end())
-            .splineToSplineHeading(new Pose2d(30.001, 5.5, Math.toRadians(230)), Math.toRadians(60))
-            .splineToSplineHeading(new Pose2d(58, 12, Math.toRadians(0)), Math.toRadians(-20))
-            .splineToConstantHeading(
-                    new Vector2d(69, 15), Math.toRadians(0),
-                    SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-            )
-            .build();
-
-        //cones to pole
-        Trajectory conePole = mecanumDrive.trajectoryBuilder(poleCone.end())
-            .splineToSplineHeading(new Pose2d(69.001, 15, Math.toRadians(0)), Math.toRadians(160))
-            .splineToSplineHeading(new Pose2d(37, 10, Math.toRadians(230)), Math.toRadians(220))
-            .splineToConstantHeading(
-                    new Vector2d(30, 5.5), Math.toRadians(200),
-                    SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-            )
-            .build();
+                .splineToSplineHeading(new Pose2d(34, 20, Math.toRadians(230)), Math.toRadians(250))
+                .splineToConstantHeading(
+                        new Vector2d(31, 6.5), Math.toRadians(250),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
 
         //pole to parking 1
-        Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(conePole.end())
-            .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
-            .splineToSplineHeading(new Pose2d(36, 24, Math.toRadians(300)), Math.toRadians(90))
-            .splineToSplineHeading(new Pose2d(12, 36, Math.toRadians(270)), Math.toRadians(0))
+        Trajectory poleParking1 = mecanumDrive.trajectoryBuilder(startPole.end(), true)
+            .splineToSplineHeading(new Pose2d(36.0, 28, Math.toRadians(270.0)), Math.toRadians(100.0))
+            .splineToConstantHeading(new Vector2d(63.0, 36.0), 0.0)
             .build();
 
         //pole to parking 2
-        Trajectory poleParking2 = mecanumDrive.trajectoryBuilder(conePole.end())
-            .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
-            .splineToSplineHeading(new Pose2d(36, 36, Math.toRadians(90)), Math.toRadians(90))
+        Trajectory poleParking2 = mecanumDrive.trajectoryBuilder(startPole.end(), true)
+            .splineToSplineHeading(new Pose2d(36.0, 36.0, Math.toRadians(270.0)), Math.toRadians(100.0))
             .build();
 
         //pole to parking 3
-        Trajectory poleParking3 = mecanumDrive.trajectoryBuilder(conePole.end())
-            .splineToSplineHeading(new Pose2d(conePole.end().getX() + 0.0001, conePole.end().getY(), conePole.end().getHeading()), Math.toRadians(100))
-            .splineToSplineHeading(new Pose2d(36, 24, Math.toRadians(270)), Math.toRadians(90))
-            .splineToSplineHeading(new Pose2d(60, 36, Math.toRadians(270)), Math.toRadians(180))
+        Trajectory poleParking3 = mecanumDrive.trajectoryBuilder(startPole.end(), true)
+            .splineToConstantHeading(new Vector2d(36, 24), Math.toRadians(230))
+            .splineToConstantHeading(new Vector2d(60, 36), Math.toRadians(230))
             .build();
-
-        //TODO: add lifter and claw to trajectory code
-
         waitForStart();
 
         currentState = State.Start_Pole;
         claw.close();
-        lifter.setTargetPosition(3);
         mecanumDrive.followTrajectoryAsync(startPole);
+        lifter.setTargetPosition(3);
 
         while(opModeIsActive()){
-            level = roundedAverage(detections);
             telemetry.addData("level", level);
             telemetry.update();
             switch (currentState) {
                 case Start_Pole:
                     if (!mecanumDrive.isBusy()) {
-                        currentState = State.Pole_Cone;
+                        currentState = State.Park;
                         claw.open();
                         sleep(400);
-                        lifter.setTargetPosition(4);
-                        mecanumDrive.followTrajectoryAsync(poleCone);
-                    }
-                    break;
-                case Pole_Cone:
-                    if (!mecanumDrive.isBusy()) {
-                        lifter.setTargetPosition(3);
-                        currentState = State.Grab;
-                        claw.close();
-                        sleep(200);
-                    }
-                    break;
-                case Grab:
-                    if(lifter.getPositions()[0] > 2000){
-                        currentState = State.Cone_Pole;
-                        mecanumDrive.followTrajectoryAsync(conePole);
-                    }
-                    break;
-                case Cone_Pole:
-                    if (!mecanumDrive.isBusy()) {
-                        cycle++;
-                        if (cycle == 5) {
-                            lifter.setTargetPosition(0);
-                            currentState = State.Park;
-                            if (level == 1) mecanumDrive.followTrajectoryAsync(poleParking1);
-
-                            if (level == 2) mecanumDrive.followTrajectoryAsync(poleParking2);
-
-                            if (level == 3) mecanumDrive.followTrajectoryAsync(poleParking2);
-                        }
-                        else {
-                            currentState = State.Pole_Cone;
-                            lifter.setTargetPosition(4);
-                            claw.open();
-                            sleep(400);
-                            mecanumDrive.followTrajectoryAsync(poleCone);
+                        lifter.setTargetPosition(0);
+                        if (level == 1) {
+                            mecanumDrive.followTrajectoryAsync(poleParking1);
+                        } else if (level == 2) {
+                            mecanumDrive.followTrajectoryAsync(poleParking2);
+                        } else if (level == 3){
+                            mecanumDrive.followTrajectoryAsync(poleParking3);
                         }
                     }
                     break;

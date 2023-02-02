@@ -44,7 +44,7 @@ public class TeleOpMode extends LinearOpMode {
 
         while(opModeIsActive()){
             //Get the hypotenuse of the right triangle created by the position of the left gamepad stick on the x and y axis
-            double gamepadX = gamepad1.left_stick_x;
+            double gamepadX = -gamepad1.left_stick_x*1.1;
             double gamepadY = -gamepad1.left_stick_y;
             double r = Math.hypot(gamepadX, gamepadY);
             //get angle from imu
@@ -67,10 +67,11 @@ public class TeleOpMode extends LinearOpMode {
             double max = Math.max(Math.abs(sin), Math.abs(cos));
             double turn = gamepad1.right_stick_x;
 
-            double fL = cos*r/max+turn;
-            double fR = sin*r/max-turn;
-            double bL = sin*r/max+turn;
-            double bR = cos*r/max-turn;
+            double fL = ((sin*r)/max)+turn;
+            double fR = ((cos*r)/max)-turn;
+            double bL = ((cos*r)/max)+turn;
+            double bR = ((sin*r)/max)-turn;
+
             if((r + Math.abs(turn)) > 1){
                 fL /= (r + Math.abs(turn));
                 fR /= (r + Math.abs(turn));
@@ -78,7 +79,10 @@ public class TeleOpMode extends LinearOpMode {
                 bR /= (r + Math.abs(turn));
             }
 
-            if(gamepad1.right_bumper){
+            fL /= 1.1;
+            bL /= 1.1;
+
+            if(gamepad1.right_bumper) {
                 mecanumDrive.drive(fL, fR, bL, bR);
             } else {
                 mecanumDrive.drive(fL/2, fR/2, bL/2, bR/2);
@@ -100,6 +104,7 @@ public class TeleOpMode extends LinearOpMode {
             lifter.changeTarget((int)(-50*gamepad2.left_stick_y));
             lifter.runToTarget();
 
+            telemetry.addData("fL, fR, bL, bR", fL + " " + fR + " " + bL + " " + bR);
             telemetry.addData("Encoder position", mecanumDrive.getPosition());
             telemetry.update();
         }

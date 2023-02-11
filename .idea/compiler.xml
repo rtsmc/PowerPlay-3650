@@ -2,8 +2,6 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
-      <module name="PowerPlay-3650.FtcRobotController" target="17" />
-      <module name="PowerPlay-3650.TeamCode" target="17" />
       <module name="robotics.FtcRobotController" target="11" />
       <module name="robotics.TeamCode" target="11" />
     </bytecodeTargetLevel>

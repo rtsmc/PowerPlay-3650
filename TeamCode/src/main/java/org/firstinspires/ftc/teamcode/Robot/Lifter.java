@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Lifter {
     private DcMotorEx left;
@@ -12,12 +13,11 @@ public class Lifter {
     private static int targetPosition;
     private static int mode; // 0: Manual; 1: Run to position
 
-    public Lifter(DcMotorEx left, DcMotorEx right){
-        this.left = left;
-        this.right = right;
+    public Lifter(HardwareMap hardwareMap){
+        left = hardwareMap.get(DcMotorEx.class, "leftLifter");
+        right = hardwareMap.get(DcMotorEx.class, "rightLifter");
         targetPosition = 0;
         mode = 0;
-
 
         right.setDirection(DcMotorSimple.Direction.REVERSE);
 

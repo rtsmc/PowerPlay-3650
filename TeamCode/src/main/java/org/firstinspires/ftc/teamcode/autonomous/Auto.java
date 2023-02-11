@@ -20,7 +20,6 @@ public class Auto extends LinearOpMode {
         Park,
         IDLE
     }
-
     private OpenCvWebcam webcam;
     private ColorDetector detector;
     private int[] detections = new int[100];

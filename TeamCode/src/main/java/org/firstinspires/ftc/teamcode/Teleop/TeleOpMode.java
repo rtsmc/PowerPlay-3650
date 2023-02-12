@@ -1,39 +1,49 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Lifter;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.PoseStorage;
+
+import java.util.List;
 
 @TeleOp
 public class TeleOpMode extends LinearOpMode {
-    private SampleMecanumDrive mecanumDrive;
-    private Claw claw;
-    private Lifter lifter;
 
     @Override
     public void runOpMode() throws InterruptedException {
         //drive
-        mecanumDrive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
+        mecanumDrive.setPoseEstimate(PoseStorage.currentPose);
 
         //claw
-        claw = new Claw(hardwareMap);
+        Claw claw = new Claw(hardwareMap);
 
         //lifter
-        lifter = new Lifter(hardwareMap);
+        Lifter lifter = new Lifter(hardwareMap);
+
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
 
         while(opModeIsActive()){
+            mecanumDrive.update();
             double gamepadX = -gamepad1.left_stick_x;
             double gamepadY = -gamepad1.left_stick_y;
             double r = Math.hypot(gamepadX, gamepadY);
 
-            double gyroAngle = mecanumDrive.getRawExternalHeading();
+            double gyroAngle = mecanumDrive.getPoseEstimate().getHeading()-Math.PI/2;
 
             double cosA = Math.cos(gyroAngle);
             double sinA = Math.sin(gyroAngle);
@@ -81,6 +91,8 @@ public class TeleOpMode extends LinearOpMode {
 
             lifter.changeTarget((int)(-50*gamepad2.left_stick_y));
             lifter.runToTarget();
+
+            telemetry.addData("gyroAngle", gyroAngle);
         }
     }
 }

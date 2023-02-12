@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,19 +20,13 @@ public class TeleOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //drive
         SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
-        mecanumDrive.setPoseEstimate(PoseStorage.currentPose);
+        mecanumDrive.setPoseEstimate(new Pose2d(0, 0, 0));
 
         //claw
         Claw claw = new Claw(hardwareMap);
 
         //lifter
         Lifter lifter = new Lifter(hardwareMap);
-
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

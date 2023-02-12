@@ -82,17 +82,16 @@ public class Left extends LinearOpMode {
         }
 
         Trajectory startPole = drive.trajectoryBuilder(startPose, Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-36, -17), Math.toRadians(85))
-                .splineToSplineHeading(
-                        new Pose2d(-27, -5.5, Math.toRadians(45)), Math.toRadians(40),
+                .splineToConstantHeading(new Vector2d(-36, 0), Math.toRadians(85))
+                .splineToConstantHeading(
+                        new Vector2d(-30.5, -1), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         Trajectory poleCone = drive.trajectoryBuilder(startPole.end(), Math.toRadians(250))
-                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)), Math.toRadians(180))
                 .splineToConstantHeading(
                         new Vector2d(-65, -12), Math.toRadians(180),
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -101,28 +100,30 @@ public class Left extends LinearOpMode {
                 .build();
 
         Trajectory conePole = drive.trajectoryBuilder(poleCone.end(), 0)
-                .splineToConstantHeading(new Vector2d(-55, -12), 0)
-                .splineToConstantHeading(new Vector2d(-45, -12), 0)
-                .splineToSplineHeading(new Pose2d(-27, -5.5, Math.toRadians(45)), Math.toRadians(50))
+                .splineToSplineHeading(new Pose2d(-35, 0, Math.toRadians(0)), 90)
+                .splineToConstantHeading(new Vector2d(-31, -1), 90)
                 .build();
 
-        Trajectory poleParking1 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(210))
-                .splineToSplineHeading(new Pose2d(-60, -12, 0), Math.toRadians(180))
+        Trajectory poleParking1 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
+                .splineTo(new Vector2d(-60, -12), Math.toRadians(170))
                 .build();
 
-        Trajectory poleParking2 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(225))
-                .splineToLinearHeading(new Pose2d(-36, -16, Math.toRadians(90)), Math.toRadians(225))
+        Trajectory poleParking2 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(-35, -15), Math.toRadians(270))
                 .build();
 
-        Trajectory poleParking3 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(250))
-                .splineToConstantHeading(new Vector2d(-30, -6), Math.toRadians(225))
-                .splineToSplineHeading(new Pose2d(-12, -14, Math.toRadians(90)), Math.toRadians(15))
+        Trajectory poleParking3 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(-35, -12), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-12, -12), Math.toRadians(0))
                 .build();
 
         waitForStart();
 
         currentState = State.Start_Pole;
-        claw.setPower(0.6);
+        claw.setPower(0.3);
         lifter.setTargetPosition(3);
         drive.followTrajectoryAsync(startPole);
 
@@ -130,33 +131,32 @@ public class Left extends LinearOpMode {
             switch(currentState){
                 case Start_Pole:
                     if(!drive.isBusy()){
-                        currentState = State.Pole_Cone;
-                        claw.setPower(-1);
-                        sleep(900);
-                        claw.setPower(0);
-                        lifter.setTargetPosition(4);
-                        drive.followTrajectoryAsync(poleCone);
-                        poleCone = drive.trajectoryBuilder(conePole.end(), Math.toRadians(250))
-                                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
-                                .splineToConstantHeading(
-                                        new Vector2d(-65, -12), Math.toRadians(180),
-                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                                )
-                                .build();
+                        currentState = State.Cone_Pole;
+//                        claw.setPower(-0.3);
+//                        sleep(900);
+//                        claw.setPower(0);
+//                        lifter.setTargetPosition(4);
+//                        poleCone = drive.trajectoryBuilder(conePole.end(), Math.toRadians(250))
+//                                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
+//                                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
+//                                .splineToConstantHeading(
+//                                        new Vector2d(-65, -12), Math.toRadians(180),
+//                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+//                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+//                                )
+//                                .build();
                     }
                     break;
                 case Pole_Cone:
                     if(!drive.isBusy()){
-                        claw.setPower(0.6);
+                        claw.setPower(0.3);
                         sleep(800);
                         lifter.setTargetPosition(3);
                         currentState = State.Grab;
                     }
                     break;
                 case Grab:
-                    claw.setPower(0.6);
+                    claw.setPower(0.3);
                     if(lifter.getPositions()[0] > 3000){
                         currentState = State.Cone_Pole;
                         drive.followTrajectoryAsync(conePole);
@@ -164,11 +164,11 @@ public class Left extends LinearOpMode {
                     break;
                 case Cone_Pole:
                     if(!drive.isBusy()){
-                        claw.setPower(-1);
+                        claw.setPower(-0.3);
                         sleep(900);
                         claw.setPower(0);
                         cycle++;
-                        if(cycle == 2){
+                        if(cycle == 1){
                             lifter.setTargetPosition(0);
                             currentState = State.Park;
                             if (level == 1) drive.followTrajectoryAsync(poleParking1);

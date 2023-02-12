@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Claw {
     private CRServo servo;
-    private final double power = 0.6;
+    private final double power = 0.3;
 
     public Claw (HardwareMap hardwareMap) {
         servo = hardwareMap.get(CRServo.class, "clawServo");

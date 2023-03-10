@@ -5,13 +5,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Claw {
     private Servo servo;
-    // Note: Higher number = more closed
-
-    private final double openPosition = 0.275; // maximum open: 0.25
-    private final double closedPosition = 1; // minimum close: 0.4
+    private final double openPosition = 0.74;
+    private final double closedPosition = 0;
 
     public Claw (HardwareMap hardwareMap) {
         servo = hardwareMap.get(Servo.class, "clawServo");
+        servo.setDirection(Servo.Direction.REVERSE);
     }
 
     public double getPosition() {

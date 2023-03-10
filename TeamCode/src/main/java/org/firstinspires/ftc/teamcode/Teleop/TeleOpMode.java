@@ -72,11 +72,9 @@ public class TeleOpMode extends LinearOpMode {
 
             if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
             if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
-            if(gamepad2.left_bumper == gamepad2.right_bumper) claw.stop(); //stop
 
             if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
             if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
-            if (gamepad2.dpad_up == gamepad2.dpad_down) lifter.stop(); //stop
 
 
             if (gamepad2.a) lifter.setTargetPosition(0);
@@ -88,6 +86,8 @@ public class TeleOpMode extends LinearOpMode {
             lifter.runToTarget();
 
             telemetry.addData("gyroAngle", gyroAngle);
+            telemetry.addData("clawPosition", claw.getPosition());
+            telemetry.update();
         }
     }
 }

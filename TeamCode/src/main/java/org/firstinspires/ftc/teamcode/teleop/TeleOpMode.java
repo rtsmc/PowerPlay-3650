@@ -1,17 +1,16 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Robot.Claw;
-import org.firstinspires.ftc.teamcode.Robot.Lifter;
+import org.firstinspires.ftc.teamcode.robot.Claw;
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.PoseStorage;
-
-import java.util.List;
 
 @TeleOp
 public class TeleOpMode extends LinearOpMode {
@@ -24,6 +23,14 @@ public class TeleOpMode extends LinearOpMode {
 
         //claw
         Claw claw = new Claw(hardwareMap);
+
+        //imu
+        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
+        imu.writeCalibrationData(PoseStorage.calibrationData);
 
         //lifter
         Lifter lifter = new Lifter(hardwareMap);
@@ -38,7 +45,7 @@ public class TeleOpMode extends LinearOpMode {
             double gamepadY = -gamepad1.left_stick_y;
             double r = Math.hypot(gamepadX, gamepadY);
 
-            double gyroAngle = mecanumDrive.getPoseEstimate().getHeading()-Math.PI/2;
+            double gyroAngle = imu.getAngularOrientation().firstAngle-Math.PI/2;
 
             double cosA = Math.cos(gyroAngle);
             double sinA = Math.sin(gyroAngle);

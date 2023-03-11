@@ -111,7 +111,7 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
     private boolean targetVisible       = false;
 
     @Override public void runOpMode() {
-        // Connect to the camera we are to use.  This name must match what is set up in Robot Configuration
+        // Connect to the camera we are to use.  This name must match what is set up in robot Configuration
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         /*

@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,9 +11,11 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Robot.Lifter;
+import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.PoseStorage;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -42,6 +45,12 @@ public class Left extends LinearOpMode {
         CRServo claw = hardwareMap.get(CRServo.class, "clawServo");
         Pose2d startPose = new Pose2d(-36, -65, Math.toRadians(0));
         ColorDetector detector = new ColorDetector();
+
+        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -99,22 +108,17 @@ public class Left extends LinearOpMode {
                 )
                 .build();
 
-        Trajectory conePole = drive.trajectoryBuilder(poleCone.end(), 0)
-                .splineToSplineHeading(new Pose2d(-35, 0, Math.toRadians(0)), 90)
-                .splineToConstantHeading(new Vector2d(-31, -1), 90)
-                .build();
-
-        Trajectory poleParking1 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+        Trajectory poleParking1 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
                 .splineTo(new Vector2d(-60, -12), Math.toRadians(170))
                 .build();
 
-        Trajectory poleParking2 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+        Trajectory poleParking2 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(-35, -15), Math.toRadians(270))
                 .build();
 
-        Trajectory poleParking3 = drive.trajectoryBuilder(conePole.end(), Math.toRadians(180))
+        Trajectory poleParking3 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(-35, -12), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-12, -12), Math.toRadians(0))
@@ -132,19 +136,19 @@ public class Left extends LinearOpMode {
                 case Start_Pole:
                     if(!drive.isBusy()){
                         currentState = State.Cone_Pole;
-//                        claw.setPower(-0.3);
-//                        sleep(900);
-//                        claw.setPower(0);
-//                        lifter.setTargetPosition(4);
-//                        poleCone = drive.trajectoryBuilder(conePole.end(), Math.toRadians(250))
-//                                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
-//                                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
-//                                .splineToConstantHeading(
-//                                        new Vector2d(-65, -12), Math.toRadians(180),
-//                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-//                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                                )
-//                                .build();
+                        claw.setPower(-0.3);
+                        sleep(900);
+                        claw.setPower(0);
+                        lifter.setTargetPosition(4);
+                        poleCone = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(250))
+                                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
+                                .splineToConstantHeading(
+                                        new Vector2d(-65, -12), Math.toRadians(180),
+                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                                )
+                                .build();
                     }
                     break;
                 case Pole_Cone:
@@ -159,7 +163,7 @@ public class Left extends LinearOpMode {
                     claw.setPower(0.3);
                     if(lifter.getPositions()[0] > 3000){
                         currentState = State.Cone_Pole;
-                        drive.followTrajectoryAsync(conePole);
+                        drive.followTrajectoryAsync(poleCone);
                     }
                     break;
                 case Cone_Pole:
@@ -168,7 +172,7 @@ public class Left extends LinearOpMode {
                         sleep(900);
                         claw.setPower(0);
                         cycle++;
-                        if(cycle == 1){
+                        if(cycle == 2){
                             lifter.setTargetPosition(0);
                             currentState = State.Park;
                             if (level == 1) drive.followTrajectoryAsync(poleParking1);
@@ -188,7 +192,7 @@ public class Left extends LinearOpMode {
                         currentState = State.IDLE;
                     }
                 case IDLE:
-                    PoseStorage.currentPose = drive.getPoseEstimate();
+                    PoseStorage.calibrationData = imu.readCalibrationData();
                     break;
             }
             drive.update();

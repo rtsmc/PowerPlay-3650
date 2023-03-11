@@ -89,7 +89,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive By Gyro", group="Robot")
+@Autonomous(name="robot: Auto Drive By Gyro", group="robot")
 @Disabled
 public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
@@ -165,7 +165,7 @@ public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
         // Wait for the game to start (Display Gyro value while waiting)
         while (opModeInInit()) {
-            telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
+            telemetry.addData(">", "robot Heading = %4.0f", getRawHeading());
             telemetry.update();
         }
 

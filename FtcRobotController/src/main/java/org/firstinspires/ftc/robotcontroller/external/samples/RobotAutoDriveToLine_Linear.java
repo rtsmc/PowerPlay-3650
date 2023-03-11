@@ -62,7 +62,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
  *   Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive To Line", group="Robot")
+@Autonomous(name="robot: Auto Drive To Line", group="robot")
 @Disabled
 public class RobotAutoDriveToLine_Linear extends LinearOpMode {
 

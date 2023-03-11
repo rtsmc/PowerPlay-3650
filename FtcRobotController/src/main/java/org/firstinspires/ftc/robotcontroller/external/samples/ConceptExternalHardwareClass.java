@@ -64,7 +64,7 @@ import com.qualcomm.robotcore.util.Range;
  *  Also add another new file named RobotHardware.java, drawing from the Sample with that name; select Not an OpMode.
  */
 
-@TeleOp(name="Concept: Robot Hardware Class", group="Robot")
+@TeleOp(name="Concept: robot Hardware Class", group="robot")
 @Disabled
 public class ConceptExternalHardwareClass extends LinearOpMode {
 

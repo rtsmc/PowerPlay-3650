@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * This OpMode illustrates using a webcam to locate and drive towards ANY Vuforia target.
- * The code assumes a basic two-wheel Robot Configuration with motors named left_drive and right_drive.
+ * The code assumes a basic two-wheel robot Configuration with motors named left_drive and right_drive.
  * The motor directions must be set so a positive drive goes forward and a positive turn rotates to the right.
  *
  * Under manual control, the left stick will move forward/back, and the right stick will turn left/right.
@@ -91,7 +91,7 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
         // Turn off Extended tracking.  Set this true if you want Vuforia to track beyond the target.
         parameters.useExtendedTracking = false;
 
-        // Connect to the camera we are to use.  This name must match what is set up in Robot Configuration
+        // Connect to the camera we are to use.  This name must match what is set up in robot Configuration
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
         this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
@@ -107,7 +107,7 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        // step (using the FTC robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
@@ -124,7 +124,7 @@ public class ConceptVuforiaDriveToTargetWebcam extends LinearOpMode
 
         boolean targetFound     = false;    // Set to true when a target is detected by Vuforia
         double  targetRange     = 0;        // Distance from camera to target in Inches
-        double  targetBearing   = 0;        // Robot Heading, relative to target.  Positive degrees means target is to the right.
+        double  targetBearing   = 0;        // robot Heading, relative to target.  Positive degrees means target is to the right.
         double  drive           = 0;        // Desired forward power (-1 to +1)
         double  turn            = 0;        // Desired turning power (-1 to +1)
 

@@ -75,7 +75,7 @@ public class SensorColor extends LinearOpMode {
 
   /** The relativeLayout field is used to aid in providing interesting visual feedback
    * in this sample application; you probably *don't* need this when you use a color sensor on your
-   * robot. Note that you won't see anything change on the Driver Station, only on the Robot Controller. */
+   * robot. Note that you won't see anything change on the Driver Station, only on the robot Controller. */
   View relativeLayout;
 
   /**
@@ -91,7 +91,7 @@ public class SensorColor extends LinearOpMode {
   @Override public void runOpMode() {
 
     // Get a reference to the RelativeLayout so we can later change the background
-    // color of the Robot Controller app to match the hue detected by the RGB sensor.
+    // color of the robot Controller app to match the hue detected by the RGB sensor.
     int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
     relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
@@ -212,7 +212,7 @@ public class SensorColor extends LinearOpMode {
 
       telemetry.update();
 
-      // Change the Robot Controller's background color to match the color detected by the color sensor.
+      // Change the robot Controller's background color to match the color detected by the color sensor.
       relativeLayout.post(new Runnable() {
         public void run() {
           relativeLayout.setBackgroundColor(Color.HSVToColor(hsvValues));

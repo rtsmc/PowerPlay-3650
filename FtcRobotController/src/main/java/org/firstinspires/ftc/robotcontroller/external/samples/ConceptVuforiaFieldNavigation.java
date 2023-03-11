@@ -178,7 +178,7 @@ public class ConceptVuforiaFieldNavigation extends LinearOpMode {
          * Z is UP on the robot.  This equates to a heading angle of Zero degrees.
          *
          * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-         * pointing to the LEFT side of the Robot.
+         * pointing to the LEFT side of the robot.
          * The two examples below assume that the camera is facing forward out the front of the robot.
          */
 

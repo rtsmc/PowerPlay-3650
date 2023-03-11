@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
-import org.firstinspires.ftc.teamcode.util.PoseStorage;
 
 @TeleOp
 public class TeleOpMode extends LinearOpMode {
@@ -30,10 +29,10 @@ public class TeleOpMode extends LinearOpMode {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
-        imu.writeCalibrationData(PoseStorage.calibrationData);
 
         //lifter
         Lifter lifter = new Lifter(hardwareMap);
+        boolean dPadPressed = false;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -80,10 +79,9 @@ public class TeleOpMode extends LinearOpMode {
             if(!gamepad2.left_bumper && gamepad2.right_bumper) claw.open(); //open
             if(gamepad2.left_bumper && !gamepad2.right_bumper) claw.close(); //close
 
-            if (gamepad2.dpad_up && !gamepad2.dpad_down) lifter.moveUp(); //up
-            if (!gamepad2.dpad_up && gamepad2.dpad_down) lifter.moveDown(); //down
-            if (gamepad2.dpad_up == gamepad2.dpad_down) lifter.stop(); //stop
-
+            if (!dPadPressed && gamepad2.dpad_up && !gamepad2.dpad_down) lifter.changeTarget(225); //up one cone
+            if (!dPadPressed && !gamepad2.dpad_up && gamepad2.dpad_down) lifter.changeTarget(-225); //down one cone
+            dPadPressed = gamepad2.dpad_up || gamepad2.dpad_down;
 
             if (gamepad2.a) lifter.setTargetPosition(0);
             if (gamepad2.b) lifter.setTargetPosition(1);
@@ -94,6 +92,8 @@ public class TeleOpMode extends LinearOpMode {
             lifter.runToTarget();
 
             telemetry.addData("gyroAngle", gyroAngle);
+            telemetry.addData("lifterTarget", lifter.getTargetPosition());
+            telemetry.addData("lifterPosition", lifter.getPositions()[0]);
             telemetry.addData("clawPosition", claw.getPosition());
             telemetry.update();
         }

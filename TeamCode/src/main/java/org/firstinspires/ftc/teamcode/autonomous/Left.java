@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
-import org.firstinspires.ftc.teamcode.util.PoseStorage;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -191,8 +190,8 @@ public class Left extends LinearOpMode {
                     if(!drive.isBusy()){
                         currentState = State.IDLE;
                     }
+                    break;
                 case IDLE:
-                    PoseStorage.calibrationData = imu.readCalibrationData();
                     break;
             }
             drive.update();

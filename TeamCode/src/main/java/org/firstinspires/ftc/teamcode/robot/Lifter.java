@@ -30,22 +30,10 @@ public class Lifter {
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void moveUp() {
+    public void move(float power) {
         mode = 0; // Set mode to Manual
-        left.setVelocity(LIFTER_VELOCITY);
-        right.setVelocity(LIFTER_VELOCITY);
-    }
-
-    public void moveDown() {
-        mode = 0; // Set mode to Manual
-        left.setVelocity(-LIFTER_VELOCITY);
-        right.setVelocity(-LIFTER_VELOCITY);
-    }
-
-    public void stop() {
-        if (mode != 0) return; // Only in Manual mode
-        left.setVelocity(0);
-        right.setVelocity(0);
+        left.setVelocity(LIFTER_VELOCITY*power);
+        right.setVelocity(LIFTER_VELOCITY*power);
     }
 
     public void setTarget(int target) {

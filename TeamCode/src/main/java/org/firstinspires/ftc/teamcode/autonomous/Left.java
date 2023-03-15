@@ -4,13 +4,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.robot.Claw;
 import org.firstinspires.ftc.teamcode.robot.Lifter;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -27,10 +27,8 @@ import java.util.List;
 public class Left extends LinearOpMode {
     enum State {
         Start_Pole,
-        Pole_Cone,
-        Cone_Pole,
-        Grab,
         Park,
+        Drop,
         IDLE
     }
     private OpenCvWebcam webcam;
@@ -39,9 +37,8 @@ public class Left extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         State currentState;
-        int cycle = 0;
         Lifter lifter = new Lifter(hardwareMap);
-        CRServo claw = hardwareMap.get(CRServo.class, "clawServo");
+        Claw claw = new Claw(hardwareMap);
         Pose2d startPose = new Pose2d(-36, -65, Math.toRadians(0));
         ColorDetector detector = new ColorDetector();
 
@@ -69,12 +66,6 @@ public class Left extends LinearOpMode {
             public void onError(int errorCode) {}
         });
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-
         telemetry.addLine("Waiting for Start");
         telemetry.update();
         int i = 0;
@@ -89,38 +80,18 @@ public class Left extends LinearOpMode {
             telemetry.update();
         }
 
-        Trajectory startPole = drive.trajectoryBuilder(startPose, Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-36, 0), Math.toRadians(85))
-                .splineToConstantHeading(
-                        new Vector2d(-30.5, -1), Math.toRadians(0),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+        Trajectory startPole = drive.trajectoryBuilder(startPose, 90)
+                .splineToConstantHeading(new Vector2d(-34, -26), 80)
                 .build();
 
-        Trajectory poleCone = drive.trajectoryBuilder(startPole.end(), Math.toRadians(250))
-                .splineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)), Math.toRadians(180))
-                .splineToConstantHeading(
-                        new Vector2d(-65, -12), Math.toRadians(180),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+        Trajectory poleParking1 = drive.trajectoryBuilder(startPole.end(), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(-36, -32), 230)
+                .splineToConstantHeading(new Vector2d(-60, -36), 180)
                 .build();
 
-        Trajectory poleParking1 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
-                .splineTo(new Vector2d(-60, -12), Math.toRadians(170))
-                .build();
-
-        Trajectory poleParking2 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(-35, -15), Math.toRadians(270))
-                .build();
-
-        Trajectory poleParking3 = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-35, 0), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(-35, -12), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-12, -12), Math.toRadians(0))
+        Trajectory poleParking3 = drive.trajectoryBuilder(startPole.end(), Math.toRadians(240))
+                .splineToConstantHeading(new Vector2d(-36, -36), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-12, -36), Math.toRadians(0))
                 .build();
 
         waitForStart();
@@ -134,56 +105,20 @@ public class Left extends LinearOpMode {
             switch(currentState){
                 case Start_Pole:
                     if(!drive.isBusy()){
-                        currentState = State.Cone_Pole;
+                        currentState = State.Drop;
+                        lifter.setTarget(5400);
+                    }
+                    break;
+                case Drop:
+                    if(!lifter.isBusy()){
                         claw.setPower(-0.3);
-                        sleep(900);
-                        claw.setPower(0);
-                        lifter.setTargetPosition(4);
-                        poleCone = drive.trajectoryBuilder(poleCone.end(), Math.toRadians(250))
-                                .splineToSplineHeading(new Pose2d(-45, -12, Math.toRadians(180)), Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d(-55, -12), Math.toRadians(180))
-                                .splineToConstantHeading(
-                                        new Vector2d(-65, -12), Math.toRadians(180),
-                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                                )
-                                .build();
-                    }
-                    break;
-                case Pole_Cone:
-                    if(!drive.isBusy()){
-                        claw.setPower(0.3);
-                        sleep(800);
-                        lifter.setTargetPosition(3);
-                        currentState = State.Grab;
-                    }
-                    break;
-                case Grab:
-                    claw.setPower(0.3);
-                    if(lifter.getPositions()[0] > 3000){
-                        currentState = State.Cone_Pole;
-                        drive.followTrajectoryAsync(poleCone);
-                    }
-                    break;
-                case Cone_Pole:
-                    if(!drive.isBusy()){
-                        claw.setPower(-0.3);
-                        sleep(900);
-                        claw.setPower(0);
-                        cycle++;
-                        if(cycle == 2){
-                            lifter.setTargetPosition(0);
-                            currentState = State.Park;
-                            if (level == 1) drive.followTrajectoryAsync(poleParking1);
+                        sleep(270);
+                        claw.setPower(0.01);
+                        currentState = State.Park;
+                        lifter.setTargetPosition(0);
+                        if (level == 1) drive.followTrajectoryAsync(poleParking1);
 
-                            if (level == 2) drive.followTrajectoryAsync(poleParking2);
-
-                            if (level == 3) drive.followTrajectoryAsync(poleParking3);
-                        } else {
-                            currentState = State.Pole_Cone;
-                            lifter.setTargetPosition(4+cycle);
-                            drive.followTrajectoryAsync(poleCone);
-                        }
+                        if (level == 3) drive.followTrajectoryAsync(poleParking3);
                     }
                     break;
                 case Park:

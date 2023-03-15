@@ -11,6 +11,7 @@ public class Lifter {
     private static final int LIFTER_VELOCITY = 2700;
     private static final int[] POSITIONS = {0, 2600, 4200, 5800, 850, 650, 450, 250, 50};
     private static int targetPosition;
+    private boolean isBusy = false;
     private static int mode; // 0: Manual; 1: Run to position
 
     public Lifter(HardwareMap hardwareMap){
@@ -67,6 +68,12 @@ public class Lifter {
         if (rightVelocity > LIFTER_VELOCITY) rightVelocity = LIFTER_VELOCITY;
         if (rightVelocity < 30 && rightVelocity > -30) rightVelocity = 0;
         right.setVelocity(rightVelocity);
+
+        isBusy = right.getVelocity() != 0;
+    }
+
+    public boolean isBusy(){
+        return isBusy;
     }
 
     public int[] getPositions(){

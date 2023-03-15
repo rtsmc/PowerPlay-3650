@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,6 +21,8 @@ public class Park extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         //drive
         SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
+        Pose2d startPose = new Pose2d(-36, -65, Math.toRadians(0));
+        mecanumDrive.setPoseEstimate(startPose);
         //opencv
         detector = new ColorDetector();
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
@@ -45,26 +50,47 @@ public class Park extends LinearOpMode{
             telemetry.addData("average of detections", roundedAverage(detections));
             telemetry.update();
         }
+
+        Trajectory start_x = mecanumDrive.trajectoryBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(-36, -36))
+                .build();
+
+        Trajectory x_1 = mecanumDrive.trajectoryBuilder(start_x.end())
+                .lineToConstantHeading(new Vector2d(-60, -36))
+                .build();
+
+        Trajectory x_3 = mecanumDrive.trajectoryBuilder(start_x.end())
+                .lineToConstantHeading(new Vector2d(-12, -36))
+                .build();
+
         while(opModeIsActive()){
             level = roundedAverage(detections);
             telemetry.addData("level", level);
             telemetry.update();
             switch(level) {
                 case 1:
-                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
-                    sleep(1000);
-                    mecanumDrive.setDrivePower(-0.6, -0.6, -0.6, -0.6);
-                    sleep(550);
+//                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
+//                    sleep(1000);
+//                    mecanumDrive.setDrivePower(-0.6, -0.6, -0.6, -0.6);
+//                    sleep(515);
+
+                    mecanumDrive.followTrajectory(start_x);
+                    mecanumDrive.followTrajectory(x_1);
                     break;
                 case 2:
-                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
-                    sleep(1200);
+//                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
+//                    sleep(1200);
+
+                    mecanumDrive.followTrajectory(start_x);
                     break;
                 case 3:
-                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
-                    sleep(1000);
-                    mecanumDrive.setDrivePower(0.6, 0.6, 0.6, 0.6);
-                    sleep(550);
+//                    mecanumDrive.setDrivePower(-0.6, 0.6, 0.6, -0.6);
+//                    sleep(1100);
+//                    mecanumDrive.setDrivePower(0.6, 0.6, 0.6, 0.6);
+//                    sleep(550);
+
+                    mecanumDrive.followTrajectory(start_x);
+                    mecanumDrive.followTrajectory(x_3);
                     break;
             }
             if(level != 0){
